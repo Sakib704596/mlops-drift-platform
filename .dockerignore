@@ -1,0 +1,7 @@
+data/raw/
+training/
+__pycache__/
+*.pyc
+.vscode/
+.git/
+*.md

@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 10s   # how often Prometheus pulls /metrics
+
+scrape_configs:
+  - job_name: "credit-default-api"
+    static_configs:
+      # "api" is the service name from docker-compose.yml -- Docker's
+      # internal DNS resolves it to the container's IP automatically.
+      - targets: ["api:8000"]

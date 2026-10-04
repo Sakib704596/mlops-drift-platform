@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Dataset -- large, and shouldn't be committed; data.py's error message
+# tells anyone cloning this repo exactly how to get it themselves.
+data/raw/
+
+# MLflow tracking store -- generated locally, not source code.
+# Each contributor/environment builds their own by running the training
+# scripts; committing this would also leak host-specific absolute paths
+# (the exact problem we hit when Dockerizing in Phase 4).
+mlflow.db
+mlartifacts/
+mlruns/
+
+# Drift reference data + retrain state -- also generated, not source.
+data/reference/
+data/retrain_state.json
+
+# Exported model used for Docker builds -- regenerate via the documented
+# export command rather than committing a binary model file to Git.
+exported_model/
+
+# Local model artifact from Phase 1 (plain joblib, pre-MLflow)
+data/model.joblib
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
