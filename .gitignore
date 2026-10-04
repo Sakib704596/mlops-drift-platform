@@ -21,9 +21,12 @@ mlruns/
 data/reference/
 data/retrain_state.json
 
-# Exported model used for Docker builds -- regenerate via the documented
-# export command rather than committing a binary model file to Git.
-exported_model/
+# NOTE: exported_model/ is intentionally NOT ignored -- unlike mlflow.db/
+# mlartifacts/ (which embed host-specific absolute paths), this is a
+# small, clean, portable model artifact. CI needs it to build the Docker
+# image without requiring the full dataset or a live MLflow registry in
+# the pipeline. Re-export and commit it whenever you promote a new
+# production version (see training/promotion.py).
 
 # Local model artifact from Phase 1 (plain joblib, pre-MLflow)
 data/model.joblib
