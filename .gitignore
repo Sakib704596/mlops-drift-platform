@@ -18,7 +18,6 @@ mlartifacts/
 mlruns/
 
 # Drift reference data + retrain state -- also generated, not source.
-data/reference/
 data/retrain_state.json
 
 # NOTE: exported_model/ is intentionally NOT ignored -- unlike mlflow.db/
