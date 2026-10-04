@@ -3,6 +3,12 @@ FROM python:3.10-slim AS builder
 
 WORKDIR /build
 COPY requirements.txt .
+# Upgrade pip/setuptools/wheel first -- the versions bundled inside the
+# base image are often outdated and carry their own known CVEs (wheel,
+# pip, and jaraco.context -- a setuptools dependency -- all showed up in
+# a Trivy scan here until this line was added). Installing requirements
+# afterward then uses the patched versions, not the stale bundled ones.
+RUN pip install --no-cache-dir --user --upgrade pip setuptools wheel
 # --user installs to a local dir we can cleanly copy into the final image,
 # keeping the final image free of build tools and caches.
 RUN pip install --no-cache-dir --user -r requirements.txt
@@ -10,6 +16,11 @@ RUN pip install --no-cache-dir --user -r requirements.txt
 
 # ---- Final stage: minimal runtime image ----
 FROM python:3.10-slim
+
+# Patch OS-level packages (e.g. pcre2) to their latest available Debian
+# security fixes, then clean up apt's cache so it doesn't bloat the image.
+RUN apt-get update && apt-get upgrade -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
 
 # Non-root user -- never run the service as root.
 RUN useradd --create-home --shell /bin/bash appuser
