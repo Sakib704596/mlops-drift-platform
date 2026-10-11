@@ -103,7 +103,10 @@ jobs:
       - name: Tag and push to GHCR
         if: github.ref == 'refs/heads/main'
         run: |
-          IMAGE=ghcr.io/${{ github.repository_owner }}/credit-default-api
+          # GHCR requires lowercase repository names; GitHub usernames can
+          # contain uppercase letters (e.g. "Sakib704596"), so lowercase it.
+          OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE=ghcr.io/$OWNER_LC/credit-default-api
           docker tag credit-default-api:${{ github.sha }} $IMAGE:${{ github.sha }}
           docker tag credit-default-api:${{ github.sha }} $IMAGE:latest
           docker push $IMAGE:${{ github.sha }}
