@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: credit-default-api
+  namespace: mlops
+spec:
+  selector:
+    app: credit-default-api   # routes traffic to any pod matching this label
+  ports:
+    - port: 80          # port other things in the cluster use to reach this Service
+      targetPort: 8000   # the container's actual listening port
+  type: ClusterIP   # internal-only; we'll port-forward to reach it locally from minikube

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: credit-default-api
+  namespace: mlops
+  labels:
+    app: credit-default-api
+spec:
+  replicas: 2   # 2 pods -- lets us demo rolling updates and pod failure recovery
+  selector:
+    matchLabels:
+      app: credit-default-api
+  template:
+    metadata:
+      labels:
+        app: credit-default-api
+    spec:
+      # No imagePullSecrets needed -- the GHCR package is public.
+      containers:
+        - name: credit-default-api
+          image: ghcr.io/sakib704596/credit-default-api:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: MODEL_VERSION
+              value: "3"   # keep in sync with exported_model/ -- see Dockerfile note
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+          # Readiness: is this pod ready to receive traffic right now?
+          # A pod that fails this is pulled out of the Service's rotation
+          # but NOT restarted -- useful if the model is still loading.
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          # Liveness: is this pod fundamentally broken and needs a restart?
+          # A longer initial delay than readiness -- we don't want
+          # Kubernetes killing a pod that's just slow to start.
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            failureThreshold: 3
