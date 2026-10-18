@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: credit-default-api
+  namespace: argocd
+spec:
+  project: default
+
+  # Git is the source of truth -- ArgoCD watches this path and
+  # continuously reconciles the cluster to match it.
+  source:
+    repoURL: https://github.com/Sakib704596/mlops-drift-platform.git
+    targetRevision: main
+    path: kubernetes/base
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mlops
+
+  syncPolicy:
+    automated:
+      prune: true      # delete resources that are removed from Git
+      selfHeal: true    # revert manual cluster changes back to match Git
+    syncOptions:
+      - CreateNamespace=true

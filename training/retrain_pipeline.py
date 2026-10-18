@@ -83,22 +83,7 @@ def run_pipeline(production_df: pd.DataFrame):
 if __name__ == "__main__":
     # Demo: reuse Phase 5's synthetic drift injection as a stand-in for a
     # real incoming production batch.
-    # `simulate_drift.py` lives under app/drift rather than beside this script,
-    # so import it by file path at runtime to avoid static-analysis warnings
-    # for a module that's only added to sys.path dynamically.
-    drift_dir = Path(__file__).resolve().parent.parent / "app" / "drift"
-    simulate_drift_path = drift_dir / "simulate_drift.py"
+    from simulate_drift import load_known_normal_sample, inject_synthetic_drift
 
-    import importlib.util
-
-    spec = importlib.util.spec_from_file_location("simulate_drift", simulate_drift_path)
-    if spec is None or spec.loader is None:
-        raise ImportError(f"Could not load simulate_drift module from {simulate_drift_path}")
-
-    simulate_drift = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(simulate_drift)
-
-    production_batch = simulate_drift.inject_synthetic_drift(
-        simulate_drift.load_known_normal_sample()
-    )
+    production_batch = inject_synthetic_drift(load_known_normal_sample())
     run_pipeline(production_batch)

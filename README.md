@@ -26,7 +26,7 @@ proven better than what's already running.
 
 ## Architecture
 
-![Architecture Diagram](system_architecture.png)
+![Architecture Diagram](docs/system_architecture.png)
 
 ---
 
